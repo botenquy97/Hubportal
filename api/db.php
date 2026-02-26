@@ -1,4 +1,7 @@
 <?php
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 // Config: Điền thông tin Database cPanel vào đây
 $host = 'localhost'; 
 $dbname = 'gtxjozdehosting_hubportal'; // Thay tên DB của bạn
