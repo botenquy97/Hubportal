@@ -1,0 +1,21 @@
+name: Deploy Web Hub to cPanel
+
+on:
+  push:
+    branches:
+      - main # Khi nhánh main được push code mới 
+
+jobs:
+  web-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Lấy mã nguồn mới nhất
+      uses: actions/checkout@v3
+    
+    - name: Đồng bộ hoá thư mục lên cPanel
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        server-dir: public_html/

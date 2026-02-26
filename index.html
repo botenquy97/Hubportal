@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Hub</title>
+    <!-- Phông chữ hiện đại -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Icon từ Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Nền động Gradient/Glassmorphism -->
+    <div class="background">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="noise-overlay"></div>
+    </div>
+
+    <main class="container">
+        <!-- Nút chuyển đổi giao diện -->
+        <button id="theme-toggle" class="icon-btn theme-btn" title="Chuyển đổi giao diện">
+            <i class="ph ph-sun"></i>
+        </button>
+
+        <!-- Đồng hồ và Lời chào -->
+        <header class="header animate-fade-in-up">
+            <h1 id="greeting">Chào buổi sáng</h1>
+            <h2 id="clock">12:00</h2>
+        </header>
+
+        <!-- Thanh tìm kiếm -->
+        <section class="search-section animate-fade-in-up" style="animation-delay: 0.1s;">
+            <div id="search-container" style="width: 100%; max-width: 650px;">
+                <div class="search-bar">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input type="text" id="search-input" placeholder="Tìm kiếm lối tắt trong Web Hub..."
+                        autocomplete="off" autofocus>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lưới Web Hub -->
+        <section class="hub-section animate-fade-in-up" style="animation-delay: 0.2s;">
+            <div class="hub-header">
+                <h3>Lối tắt yêu thích</h3>
+                <button id="add-btn" class="icon-btn" title="Thêm lối tắt mới">
+                    <i class="ph ph-plus-circle"></i>
+                </button>
+            </div>
+            <div id="links-grid" class="links-grid">
+                <!-- Danh sách link sẽ được render bằng JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Thêm/Sửa Lối tắt -->
+    <div id="link-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h3 id="modal-title">Thêm Lối Tắt</h3>
+                <button id="close-modal-btn" class="icon-btn">
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
+            <form id="link-form">
+                <input type="hidden" id="link-id">
+                <div class="form-group">
+                    <label for="link-name">Tên hiển thị</label>
+                    <input type="text" id="link-name" placeholder="VD: YouTube" required>
+                </div>
+                <div class="form-group">
+                    <label for="link-url">Địa chỉ web (URL)</label>
+                    <input type="url" id="link-url" placeholder="VD: https://youtube.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="link-icon">Địa chỉ icon (Tùy chọn)</label>
+                    <input type="url" id="link-icon" placeholder="Tự động lấy nếu để trống">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="cancel-btn" class="btn btn-secondary">Hủy bỏ</button>
+                    <button type="submit" class="btn btn-primary">Lưu lại</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="script.js"></script>
+</body>
+
+</html>
