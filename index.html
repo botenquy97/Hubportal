@@ -40,8 +40,7 @@
             <div id="search-container" style="width: 100%; max-width: 650px;">
                 <div class="search-bar">
                     <i class="ph ph-magnifying-glass"></i>
-                    <input type="text" id="search-input" placeholder="Tìm kiếm lối tắt trong Web Hub..."
-                        autocomplete="off" autofocus>
+                    <input type="text" id="search-input" placeholder="Tìm kiếm..." autocomplete="off" autofocus>
                 </div>
             </div>
         </section>
@@ -80,8 +79,20 @@
                     <input type="url" id="link-url" placeholder="VD: https://youtube.com" required>
                 </div>
                 <div class="form-group">
-                    <label for="link-icon">Địa chỉ icon (Tùy chọn)</label>
-                    <input type="url" id="link-icon" placeholder="Tự động lấy nếu để trống">
+                    <label>Ảnh đại diện (Tùy chọn)</label>
+                    <div class="icon-upload-area" id="icon-upload-area">
+                        <div class="icon-preview" id="icon-preview">
+                            <i class="ph ph-image-square"></i>
+                        </div>
+                        <div class="icon-upload-controls">
+                            <label for="link-icon-file" class="btn btn-secondary btn-sm">
+                                <i class="ph ph-upload-simple"></i> Chọn ảnh từ máy
+                            </label>
+                            <input type="file" id="link-icon-file" accept="image/*" style="display:none">
+                            <span class="or-divider">hoặc</span>
+                            <input type="url" id="link-icon" placeholder="Dán đường dẫn URL ảnh">
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-actions">
                     <button type="button" id="cancel-btn" class="btn btn-secondary">Hủy bỏ</button>

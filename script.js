@@ -23,6 +23,8 @@ const linkIdInput = document.getElementById('link-id');
 const linkNameInput = document.getElementById('link-name');
 const linkUrlInput = document.getElementById('link-url');
 const linkIconInput = document.getElementById('link-icon');
+const linkIconFileInput = document.getElementById('link-icon-file');
+const iconPreview = document.getElementById('icon-preview');
 const modalTitle = document.getElementById('modal-title');
 
 // Initialize the app
@@ -119,6 +121,30 @@ async function apiCall(endpoint, data) {
     }
 }
 
+async function uploadIconFile(file) {
+    const formData = new FormData();
+    formData.append('icon', file);
+    try {
+        const response = await fetch(`${API_URL}/upload_icon.php`, {
+            method: 'POST',
+            body: formData
+        });
+        return await response.json();
+    } catch (error) {
+        console.error('Lỗi upload icon:', error);
+        return { success: false, message: 'Lỗi kết nối mạng' };
+    }
+}
+
+function updateIconPreview(src) {
+    if (!iconPreview) return;
+    if (src) {
+        iconPreview.innerHTML = `<img src="${src}" alt="preview" onerror="this.parentNode.innerHTML='<i class=\'ph ph-image-square\'></i>'">`;
+    } else {
+        iconPreview.innerHTML = '<i class="ph ph-image-square"></i>';
+    }
+}
+
 // ---- HELPER FUNCTIONS ---- 
 function autoConvertUrl(urlStr) {
     if (!urlStr.trim()) return '';
@@ -204,6 +230,8 @@ window.editLink = function (e, id) {
     linkNameInput.value = targetLink.name;
     linkUrlInput.value = targetLink.url;
     linkIconInput.value = targetLink.icon || '';
+    if (linkIconFileInput) linkIconFileInput.value = '';
+    updateIconPreview(targetLink.icon || '');
 
     modalTitle.textContent = 'Sửa lối tắt';
     openModal();
@@ -234,6 +262,7 @@ function openModal() {
 function closeModal() {
     modal.classList.add('hidden');
     linkForm.reset();
+    updateIconPreview('');
 }
 
 function setupEventListeners() {
@@ -244,8 +273,34 @@ function setupEventListeners() {
     addBtn.addEventListener('click', () => {
         linkIdInput.value = ''; // Xóa ID để tạo mới
         modalTitle.textContent = 'Thêm lối tắt mới';
+        updateIconPreview('');
         openModal();
     });
+
+    // Preview ảnh khi chọn file
+    if (linkIconFileInput) {
+        linkIconFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const objectUrl = URL.createObjectURL(file);
+                updateIconPreview(objectUrl);
+                linkIconInput.value = ''; // Xóa URL nếu đã chọn file
+            }
+        });
+    }
+
+    // Preview khi nhập URL icon
+    if (linkIconInput) {
+        linkIconInput.addEventListener('input', (e) => {
+            const url = e.target.value.trim();
+            if (url) {
+                updateIconPreview(url);
+                if (linkIconFileInput) linkIconFileInput.value = ''; // Xóa file nếu nhập URL
+            } else {
+                updateIconPreview('');
+            }
+        });
+    }
 
     closeModalBtn.addEventListener('click', closeModal);
     cancelBtn.addEventListener('click', closeModal);
@@ -263,12 +318,26 @@ function setupEventListeners() {
         const id = linkIdInput.value;
         const name = linkNameInput.value.trim();
         const url = autoConvertUrl(linkUrlInput.value);
-        const icon = linkIconInput.value.trim();
+        let icon = linkIconInput.value.trim();
 
         const submitBtn = document.querySelector('#link-form button[type="submit"]');
         const originalText = submitBtn.textContent;
         submitBtn.textContent = 'Đang lưu...';
         submitBtn.disabled = true;
+
+        // Nếu user chọn file, upload lên server và lấy đường dẫn
+        const selectedFile = linkIconFileInput && linkIconFileInput.files[0];
+        if (selectedFile) {
+            const uploadResult = await uploadIconFile(selectedFile);
+            if (uploadResult.success) {
+                icon = uploadResult.icon_path;
+            } else {
+                alert('Lỗi tải ảnh lên: ' + uploadResult.message);
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                return;
+            }
+        }
 
         if (id) {
             // Update
