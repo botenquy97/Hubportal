@@ -186,7 +186,7 @@ function renderLinks(filterText = '') {
         const anchor = document.createElement('a');
         anchor.className = 'link-card';
         anchor.href = link.url;
-        anchor.target = "_self"; // Mở tab hiện tại, hoặc thay bằng "_blank" để mở tab mới
+        anchor.target = "_blank"; // Mở trong tab mới
 
         // Build icon HTML
         let iconHtml = '';
