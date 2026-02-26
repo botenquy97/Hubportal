@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Icon từ Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link rel="stylesheet" href="style.css">
+    <title>Đăng nhập - Web Hub</title>
+    <style>
+        .login-page {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .login-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 3rem 2rem;
+            border-radius: 30px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-card h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent), var(--blob-1));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-card p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .brand-icon {
+            font-size: 4rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background">
+        <div class="noise-overlay"></div>
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="login-page">
+        <div class="login-card animate-fade-in-up">
+            <div class="brand-icon">
+                <i class="ph-fill ph-house"></i>
+            </div>
+            <h2>Web Hub</h2>
+            <p>Vui lòng đăng nhập để truy cập phím tắt của bạn</p>
+
+            <div id="login-container" class="login-container">
+                <div id="g_id_onload"
+                    data-client_id="1035735916475-e0jab5r601ltdg31h19foo8v27cfpbcq.apps.googleusercontent.com"
+                    data-callback="handleCredentialResponse" data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"
+                    data-text="continue_with" data-shape="rectangular" data-logo_alignment="left">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Override function handleCredentialResponse in login page
+        window.handleCredentialResponse = async function (response) {
+            const API_URL = './api';
+            const responseData = await fetch(`${API_URL}/auth.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_token: response.credential })
+            });
+            const result = await responseData.json();
+            if (result.success) {
+                window.location.href = 'index.html';
+            } else {
+                alert('Đăng nhập thất bại: ' + result.message);
+            }
+        }
+    </script>
+</body>
+
+</html>

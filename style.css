@@ -540,6 +540,13 @@ body {
 }
 
 /* Header theme toggle button */
+.user-profile {
+    position: fixed;
+    top: 1.5rem;
+    left: 1.5rem;
+    z-index: 1000;
+}
+
 .theme-btn {
     position: absolute;
     top: 2rem;

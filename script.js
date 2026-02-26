@@ -47,32 +47,27 @@ async function init() {
 
 // ---- AUTH FUNCTIONS ----
 async function checkAuthStatus() {
+    const isLoginPage = window.location.pathname.includes('login.html');
     try {
-        const response = await fetch(`${API_URL}/get_links.php`);
-        const result = await response.json();
+        const authResponse = await fetch(`${API_URL}/auth_status.php`);
+        const authResult = await authResponse.json();
 
-        // Nếu require_login = true, nghĩa là chưa login
-        if (result.require_login) {
-            updateUIForAuth(null);
-            links = [];
-            renderLinks();
-        } else {
-            // Đã login, chúng ta cần lấy thông tin user từ một nơi nào đó hoặc assume đã login
-            // Để đơn giản, mình sẽ thêm một API check_session.php sau hoặc dùng dữ liệu từ get_links
-            // Ở đây mình sẽ fetch thông tin user nếu cần, nhưng tạm thời dùng fake state để UI hiện
-            // Tốt nhất là fetch trực tiếp một API auth_status
-            const authResponse = await fetch(`${API_URL}/auth_status.php`);
-            const authResult = await authResponse.json();
-            if (authResult.success) {
-                updateUIForAuth(authResult.user);
-                await loadLinks(); // Load links after successful auth
+        if (authResult.success) {
+            updateUIForAuth(authResult.user);
+            if (isLoginPage) {
+                window.location.href = 'index.html';
             } else {
-                updateUIForAuth(null);
+                await loadLinks();
+            }
+        } else {
+            updateUIForAuth(null);
+            if (!isLoginPage) {
+                window.location.href = 'login.html';
             }
         }
     } catch (error) {
         console.error('Lỗi kiểm tra auth:', error);
-        updateUIForAuth(null); // Assume not authenticated on error
+        if (!isLoginPage) window.location.href = 'login.html';
     }
 }
 
@@ -84,8 +79,7 @@ window.handleCredentialResponse = async function (response) {
     });
     const result = await responseData.json();
     if (result.success) {
-        updateUIForAuth(result.user);
-        await loadLinks(); // Tải lại link sau khi login
+        window.location.href = 'index.html';
     } else {
         alert('Đăng nhập thất bại: ' + result.message);
     }
@@ -94,16 +88,15 @@ window.handleCredentialResponse = async function (response) {
 function updateUIForAuth(user) {
     currentUser = user;
     if (user) {
-        loginContainer.classList.add('hidden');
-        userProfile.classList.remove('hidden');
-        userAvatar.src = user.picture;
-        userName.textContent = user.name;
-        addBtn.classList.remove('hidden');
+        if (loginContainer) loginContainer.classList.add('hidden');
+        if (userProfile) userProfile.classList.remove('hidden');
+        if (userAvatar) userAvatar.src = user.picture;
+        if (userName) userName.textContent = user.name;
+        if (addBtn) addBtn.classList.remove('hidden');
     } else {
-        loginContainer.classList.remove('hidden');
-        userProfile.classList.add('hidden');
-        addBtn.classList.add('hidden');
-        linksGrid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 2rem 0;">Vui lòng đăng nhập để xem và quản lý các lối tắt của bạn.</p>';
+        if (loginContainer) loginContainer.classList.remove('hidden');
+        if (userProfile) userProfile.classList.add('hidden');
+        if (addBtn) addBtn.classList.add('hidden');
     }
 }
 
@@ -111,9 +104,7 @@ async function handleLogout() {
     const response = await fetch(`${API_URL}/logout.php`);
     const result = await response.json();
     if (result.success) {
-        updateUIForAuth(null);
-        links = [];
-        renderLinks();
+        window.location.href = 'login.html';
     }
 }
 
