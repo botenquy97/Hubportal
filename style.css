@@ -36,9 +36,9 @@
     --text-main: #0f172a;
     --text-muted: #475569;
 
-    --glass-bg: rgba(255, 255, 255, 0.5);
-    --glass-border: rgba(255, 255, 255, 0.4);
-    --glass-highlight: rgba(255, 255, 255, 0.7);
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(0, 0, 0, 0.1);
+    --glass-highlight: rgba(255, 255, 255, 1);
 
     --accent: #8b5cf6;
     --accent-hover: #7c3aed;
