@@ -30,90 +30,111 @@
         <i class="ph ph-moon"></i>
     </button>
 
-    <div class="container animate-fade-in-up">
-        <header class="header">
-            <div id="user-profile" class="user-profile hidden">
-                <div class="user-info">
-                    <img id="user-avatar" src="" alt="Avatar">
-                    <span id="user-name"></span>
-                    <button id="logout-btn" class="logout-btn" title="Đăng xuất">
-                        <i class="ph ph-sign-out"></i>
+    <div class="main-wrapper" id="main-wrapper">
+        <main class="container animate-fade-in-up">
+            <header class="header">
+                <div id="user-profile" class="user-profile hidden">
+                    <div class="user-info">
+                        <img id="user-avatar" src="" alt="Avatar">
+                        <span id="user-name"></span>
+                        <button id="logout-btn" class="logout-btn" title="Đăng xuất">
+                            <i class="ph ph-sign-out"></i>
+                        </button>
+                    </div>
+                </div>
+                <h1 id="greeting">Chào buổi chiều</h1>
+                <h2 id="clock">12:00</h2>
+            </header>
+
+            <!-- Thanh tìm kiếm -->
+            <section class="search-section animate-fade-in-up" style="animation-delay: 0.1s;">
+                <div id="search-container" style="width: 100%; max-width: 650px;">
+                    <div class="search-bar">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" id="search-input" placeholder="Tìm kiếm..." autocomplete="off">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Lưới Web Hub -->
+            <section class="hub-section animate-fade-in-up" style="animation-delay: 0.2s;">
+                <div class="hub-header">
+                    <h3>Lối tắt yêu thích</h3>
+                    <button id="add-btn" class="icon-btn" title="Thêm lối tắt mới">
+                        <i class="ph ph-plus-circle"></i>
                     </button>
                 </div>
-            </div>
-            <h1 id="greeting">Chào buổi chiều</h1>
-            <h2 id="clock">12:00</h2>
-        </header>
-
-        <!-- Thanh tìm kiếm -->
-        <section class="search-section animate-fade-in-up" style="animation-delay: 0.1s;">
-            <div id="search-container" style="width: 100%; max-width: 650px;">
-                <div class="search-bar">
-                    <i class="ph ph-magnifying-glass"></i>
-                    <input type="text" id="search-input" placeholder="Tìm kiếm..." autocomplete="off" autofocus>
+                <div id="links-grid" class="links-grid">
+                    <!-- Danh sách link sẽ được render bằng JS -->
                 </div>
-            </div>
-        </section>
-
-        <!-- Lưới Web Hub -->
-        <section class="hub-section animate-fade-in-up" style="animation-delay: 0.2s;">
-            <div class="hub-header">
-                <h3>Lối tắt yêu thích</h3>
-                <button id="add-btn" class="icon-btn" title="Thêm lối tắt mới">
-                    <i class="ph ph-plus-circle"></i>
-                </button>
-            </div>
-            <div id="links-grid" class="links-grid">
-                <!-- Danh sách link sẽ được render bằng JS -->
-            </div>
-        </section>
+            </section>
         </main>
 
-        <!-- Modal Thêm/Sửa Lối tắt -->
-        <div id="link-modal" class="modal-overlay hidden">
-            <div class="modal-content glass-card">
-                <div class="modal-header">
-                    <h3 id="modal-title">Thêm Lối Tắt</h3>
-                    <button id="close-modal-btn" class="icon-btn">
+        <!-- Split View Side Panel -->
+        <aside class="split-view-panel" id="split-view-panel">
+            <div class="split-view-header">
+                <div class="split-view-title" id="split-view-title">Đang tải...</div>
+                <div class="split-view-controls">
+                    <button class="icon-btn" id="split-refresh-btn" title="Tải lại">
+                        <i class="ph ph-arrows-clockwise"></i>
+                    </button>
+                    <button class="icon-btn" id="split-external-btn" title="Mở trong tab mới">
+                        <i class="ph ph-arrow-square-out"></i>
+                    </button>
+                    <button class="split-close-btn" id="split-close-btn" title="Đóng">
                         <i class="ph ph-x"></i>
                     </button>
                 </div>
-                <form id="link-form">
-                    <input type="hidden" id="link-id">
-                    <div class="form-group">
-                        <label for="link-name">Tên hiển thị</label>
-                        <input type="text" id="link-name" placeholder="VD: YouTube" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="link-url">Địa chỉ web (URL)</label>
-                        <input type="url" id="link-url" placeholder="VD: https://youtube.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Ảnh đại diện (Tùy chọn)</label>
-                        <div class="icon-upload-area" id="icon-upload-area">
-                            <div class="icon-preview" id="icon-preview">
-                                <i class="ph ph-image-square"></i>
-                            </div>
-                            <div class="icon-upload-controls">
-                                <label for="link-icon-file" class="btn btn-secondary btn-sm">
-                                    <i class="ph ph-upload-simple"></i> Chọn ảnh từ máy
-                                </label>
-                                <input type="file" id="link-icon-file" accept="image/*" style="display:none">
-                                <span class="or-divider">hoặc</span>
-                                <input type="url" id="link-icon" placeholder="Dán đường dẫn URL ảnh">
-                            </div>
+            </div>
+            <iframe src="" id="split-view-iframe" class="split-view-iframe"></iframe>
+        </aside>
+    </div>
+
+    <!-- Modal Thêm/Sửa Lối tắt -->
+    <div id="link-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h3 id="modal-title">Thêm Lối Tắt</h3>
+                <button id="close-modal-btn" class="icon-btn">
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
+            <form id="link-form">
+                <input type="hidden" id="link-id">
+                <div class="form-group">
+                    <label for="link-name">Tên hiển thị</label>
+                    <input type="text" id="link-name" placeholder="VD: YouTube" required>
+                </div>
+                <div class="form-group">
+                    <label for="link-url">Địa chỉ web (URL)</label>
+                    <input type="url" id="link-url" placeholder="VD: https://youtube.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Ảnh đại diện (Tùy chọn)</label>
+                    <div class="icon-upload-area" id="icon-upload-area">
+                        <div class="icon-preview" id="icon-preview">
+                            <i class="ph ph-image-square"></i>
+                        </div>
+                        <div class="icon-upload-controls">
+                            <label for="link-icon-file" class="btn btn-secondary btn-sm">
+                                <i class="ph ph-upload-simple"></i> Chọn ảnh từ máy
+                            </label>
+                            <input type="file" id="link-icon-file" accept="image/*" style="display:none">
+                            <span class="or-divider">hoặc</span>
+                            <input type="url" id="link-icon" placeholder="Dán đường dẫn URL ảnh">
                         </div>
                     </div>
-                    <div class="modal-actions">
-                        <button type="button" id="cancel-btn" class="btn btn-secondary">Hủy bỏ</button>
-                        <button type="submit" class="btn btn-primary">Lưu lại</button>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="cancel-btn" class="btn btn-secondary">Hủy bỏ</button>
+                    <button type="submit" class="btn btn-primary">Lưu lại</button>
+                </div>
+            </form>
         </div>
+    </div>
 
-        <!-- JS -->
-        <script src="script.js"></script>
+    <!-- JS -->
+    <script src="script.js"></script>
 </body>
 
 </html>

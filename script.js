@@ -35,6 +35,15 @@ const linkIconFileInput = document.getElementById('link-icon-file');
 const iconPreview = document.getElementById('icon-preview');
 const modalTitle = document.getElementById('modal-title');
 
+// Split View References
+const mainWrapper = document.getElementById('main-wrapper');
+const splitViewPanel = document.getElementById('split-view-panel');
+const splitViewIframe = document.getElementById('split-view-iframe');
+const splitViewTitle = document.getElementById('split-view-title');
+const splitCloseBtn = document.getElementById('split-close-btn');
+const splitRefreshBtn = document.getElementById('split-refresh-btn');
+const splitExternalBtn = document.getElementById('split-external-btn');
+
 // Initialize the app
 async function init() {
     loadTheme();
@@ -258,10 +267,9 @@ function renderLinks(filterText = '') {
 
     filteredLinks.forEach(link => {
         // Build URL that the card navigates to
-        const anchor = document.createElement('a');
-        anchor.className = 'link-card';
-        anchor.href = link.url;
-        anchor.target = "_blank"; // Mở trong tab mới
+        const card = document.createElement('div');
+        card.className = 'link-card';
+        card.onclick = () => openSplitView(link.url, link.name);
 
         // Build icon HTML
         let iconHtml = '';
@@ -274,7 +282,7 @@ function renderLinks(filterText = '') {
             iconHtml = `<span style="font-size: 2rem; font-weight: 500">${link.name.charAt(0).toUpperCase()}</span>`;
         }
 
-        anchor.innerHTML = `
+        card.innerHTML = `
             <div class="link-actions">
                 <button class="action-btn edit" onclick="editLink(event, '${link.id}')" title="Sửa">
                     <i class="ph ph-pencil-simple"></i>
@@ -289,7 +297,7 @@ function renderLinks(filterText = '') {
             <span class="link-name" title="${link.name}">${link.name}</span>
         `;
 
-        linksGrid.appendChild(anchor);
+        linksGrid.appendChild(card);
     });
 }
 
@@ -375,6 +383,45 @@ function setupEventListeners() {
                 updateIconPreview('');
             }
         });
+    }
+
+    // ---- SPLIT VIEW FUNCTIONS ----
+    function openSplitView(url, title) {
+        if (!mainWrapper || !splitViewIframe) return;
+
+        splitViewIframe.src = url;
+        splitViewTitle.textContent = title;
+        mainWrapper.classList.add('split-active');
+
+        // Lưu lại URL hiện tại để mở tab mới
+        splitExternalBtn.onclick = () => window.open(url, '_blank');
+    }
+
+    function closeSplitView() {
+        if (!mainWrapper || !splitViewIframe) return;
+        mainWrapper.classList.remove('split-active');
+        setTimeout(() => {
+            splitViewIframe.src = '';
+        }, 500); // Đợi hiệu ứng transition kết thúc
+    }
+
+    // Cập nhật sự kiện cho các nút Split View
+    if (splitCloseBtn) splitCloseBtn.addEventListener('click', closeSplitView);
+    if (splitRefreshBtn) {
+        splitRefreshBtn.addEventListener('click', () => {
+            const currentSrc = splitViewIframe.src;
+            splitViewIframe.src = '';
+            splitViewIframe.src = currentSrc;
+        });
+    }
+
+    async function handleLogout() {
+        const response = await fetch(`${API_URL}/logout.php`);
+        const result = await response.json();
+        if (result.success) {
+            closeSplitView(); // Đóng split view nếu đang mở
+            window.location.href = 'login.html';
+        }
     }
 
     if (logoutBtn) {
