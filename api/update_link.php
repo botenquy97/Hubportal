@@ -1,20 +1,18 @@
-<?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
-
 require_once 'db.php';
+
+$userId = requireAuth();
 
 // Check for POST data
 $data = json_decode(file_get_contents("php://input"));
 
 if (isset($data->id) && isset($data->name) && isset($data->url)) {
     try {
-        $stmt = $pdo->prepare("UPDATE links SET name = :name, url = :url, icon = :icon WHERE id = :id");
+        $stmt = $pdo->prepare("UPDATE links SET name = :name, url = :url, icon = :icon WHERE id = :id AND user_id = :user_id");
         $icon = isset($data->icon) ? $data->icon : '';
         
         $stmt->execute([
             ':id' => $data->id,
+            ':user_id' => $userId,
             ':name' => $data->name,
             ':url' => $data->url,
             ':icon' => $icon

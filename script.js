@@ -3,6 +3,7 @@ const API_URL = './api';
 
 // App State
 let links = [];
+let currentUser = null;
 const THEME_KEY = 'webHubTheme';
 const LIGHT_MODE_CLASS = 'light-mode';
 
@@ -13,6 +14,13 @@ const linksGrid = document.getElementById('links-grid');
 const addBtn = document.getElementById('add-btn');
 const themeToggleBtn = document.getElementById('theme-toggle');
 const searchInput = document.getElementById('search-input');
+
+// Auth References
+const userProfile = document.getElementById('user-profile');
+const loginContainer = document.getElementById('login-container');
+const userAvatar = document.getElementById('user-avatar');
+const userName = document.getElementById('user-name');
+const logoutBtn = document.getElementById('logout-btn');
 
 // Modal References
 const modal = document.getElementById('link-modal');
@@ -30,10 +38,83 @@ const modalTitle = document.getElementById('modal-title');
 // Initialize the app
 async function init() {
     loadTheme();
-    await loadLinks();
+    // await loadLinks(); // Moved to initApp or checkAuthStatus
     updateClockAndGreeting();
     setInterval(updateClockAndGreeting, 1000); // Ticking clock every 1s
     setupEventListeners();
+    checkAuthStatus(); // Call checkAuthStatus instead of directly loading links
+}
+
+// ---- AUTH FUNCTIONS ----
+async function checkAuthStatus() {
+    try {
+        const response = await fetch(`${API_URL}/get_links.php`);
+        const result = await response.json();
+
+        // Nếu require_login = true, nghĩa là chưa login
+        if (result.require_login) {
+            updateUIForAuth(null);
+            links = [];
+            renderLinks();
+        } else {
+            // Đã login, chúng ta cần lấy thông tin user từ một nơi nào đó hoặc assume đã login
+            // Để đơn giản, mình sẽ thêm một API check_session.php sau hoặc dùng dữ liệu từ get_links
+            // Ở đây mình sẽ fetch thông tin user nếu cần, nhưng tạm thời dùng fake state để UI hiện
+            // Tốt nhất là fetch trực tiếp một API auth_status
+            const authResponse = await fetch(`${API_URL}/auth_status.php`);
+            const authResult = await authResponse.json();
+            if (authResult.success) {
+                updateUIForAuth(authResult.user);
+                await loadLinks(); // Load links after successful auth
+            } else {
+                updateUIForAuth(null);
+            }
+        }
+    } catch (error) {
+        console.error('Lỗi kiểm tra auth:', error);
+        updateUIForAuth(null); // Assume not authenticated on error
+    }
+}
+
+window.handleCredentialResponse = async function (response) {
+    const responseData = await fetch(`${API_URL}/auth.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_token: response.credential })
+    });
+    const result = await responseData.json();
+    if (result.success) {
+        updateUIForAuth(result.user);
+        await loadLinks(); // Tải lại link sau khi login
+    } else {
+        alert('Đăng nhập thất bại: ' + result.message);
+    }
+}
+
+function updateUIForAuth(user) {
+    currentUser = user;
+    if (user) {
+        loginContainer.classList.add('hidden');
+        userProfile.classList.remove('hidden');
+        userAvatar.src = user.picture;
+        userName.textContent = user.name;
+        addBtn.classList.remove('hidden');
+    } else {
+        loginContainer.classList.remove('hidden');
+        userProfile.classList.add('hidden');
+        addBtn.classList.add('hidden');
+        linksGrid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 2rem 0;">Vui lòng đăng nhập để xem và quản lý các lối tắt của bạn.</p>';
+    }
+}
+
+async function handleLogout() {
+    const response = await fetch(`${API_URL}/logout.php`);
+    const result = await response.json();
+    if (result.success) {
+        updateUIForAuth(null);
+        links = [];
+        renderLinks();
+    }
 }
 
 // ---- THEME ----
@@ -303,6 +384,10 @@ function setupEventListeners() {
                 updateIconPreview('');
             }
         });
+    }
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
     }
 
     closeModalBtn.addEventListener('click', closeModal);
