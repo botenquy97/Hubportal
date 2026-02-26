@@ -7,11 +7,21 @@ $uploadDir = dirname(__DIR__) . '/uploads/';
 
 // Tạo thư mục nếu chưa có
 if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0755, true);
+    if (!mkdir($uploadDir, 0755, true)) {
+        echo json_encode(['success' => false, 'message' => 'Không thể tạo thư mục uploads/. Hãy kiểm tra quyền ghi của thư mục gốc.']);
+        exit;
+    }
 }
 
-if (!isset($_FILES['icon']) || $_FILES['icon']['error'] !== UPLOAD_ERR_OK) {
-    echo json_encode(['success' => false, 'message' => 'Không nhận được file hợp lệ.']);
+if (!isset($_FILES['icon'])) {
+    echo json_encode(['success' => false, 'message' => 'Không tìm thấy dữ liệu file ($_FILES empty).']);
+    exit;
+}
+
+if ($_FILES['icon']['error'] !== UPLOAD_ERR_OK) {
+    $errorMsg = 'Lỗi upload số ' . $_FILES['icon']['error'];
+    if ($_FILES['icon']['error'] === 1 || $_FILES['icon']['error'] === 2) $errorMsg = 'File quá lớn (vượt giới hạn PHP server).';
+    echo json_encode(['success' => false, 'message' => $errorMsg]);
     exit;
 }
 
