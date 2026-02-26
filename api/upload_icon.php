@@ -49,10 +49,10 @@ $newFileName = uniqid('icon_', true) . '.' . $ext;
 $destPath = $uploadDir . $newFileName;
 
 if (move_uploaded_file($file['tmp_name'], $destPath)) {
-    // Trả về đường dẫn tương đối để lưu vào DB
+    // Trả về đường dẫn tương đối (không có .\/ để tránh nhầm lẫn)
     echo json_encode([
         'success' => true,
-        'icon_path' => './uploads/' . $newFileName
+        'icon_path' => 'uploads/' . $newFileName
     ]);
 } else {
     echo json_encode(['success' => false, 'message' => 'Lỗi khi lưu file. Kiểm tra quyền thư mục uploads/.']);

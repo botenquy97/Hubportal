@@ -122,6 +122,7 @@ async function apiCall(endpoint, data) {
 }
 
 async function uploadIconFile(file) {
+    console.log('Bắt đầu upload file:', file.name, file.size, 'bytes');
     const formData = new FormData();
     formData.append('icon', file);
     try {
@@ -129,10 +130,12 @@ async function uploadIconFile(file) {
             method: 'POST',
             body: formData
         });
-        return await response.json();
+        const result = await response.json();
+        console.log('Kết quả upload từ server:', result);
+        return result;
     } catch (error) {
         console.error('Lỗi upload icon:', error);
-        return { success: false, message: 'Lỗi kết nối mạng' };
+        return { success: false, message: 'Lỗi kết nối mạng: ' + error.message };
     }
 }
 
@@ -328,15 +331,20 @@ function setupEventListeners() {
         // Nếu user chọn file, upload lên server và lấy đường dẫn
         const selectedFile = linkIconFileInput && linkIconFileInput.files[0];
         if (selectedFile) {
+            console.log('Có file được chọn, đang upload...');
             const uploadResult = await uploadIconFile(selectedFile);
             if (uploadResult.success) {
                 icon = uploadResult.icon_path;
+                console.log('Upload thành công, đường dẫn icon mới:', icon);
             } else {
+                console.error('Upload thất bại:', uploadResult.message);
                 alert('Lỗi tải ảnh lên: ' + uploadResult.message);
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
                 return;
             }
+        } else {
+            console.log('Không có file được chọn, dùng URL icon:', icon);
         }
 
         if (id) {
